@@ -1,13 +1,18 @@
 ---
 name: reclaim-code-entropy
-description: Find, rank, and safely remove accidental codebase complexity by proving real consumers, dynamic entrypoints, compatibility obligations, duplicate representations, speculative surfaces, and lifecycle ownership. Use when asked to simplify or clean up a repository, reclaim code entropy, reduce over-engineering or redundancy, find deletion candidates, collapse duplicate state/APIs, remove dead or added-then-abandoned code beyond static-tool output, or implement an evidence-backed simplification pass in any language or stack. Also trigger for 代码化简、熵回收、删代码、清理冗余、收敛抽象、去除过度设计. Do not use as a performance audit unless simplification is the stated goal.
+description: Find, rank, and safely remove accidental codebase complexity by proving real consumers, dynamic entrypoints, compatibility obligations, duplicate representations, speculative surfaces, and lifecycle ownership. Use when asked to simplify or clean up a repository, reclaim code entropy, reduce over-engineering or redundancy, find deletion candidates, collapse duplicate state/APIs, remove dead or added-then-abandoned code beyond static-tool output, or implement an evidence-backed simplification pass in any language or stack. Do not use as a performance audit unless simplification is the stated goal.
 ---
 
 # Reclaim Code Entropy
 
 Treat code entropy as maintenance surface with no current load-bearing reason: extra representations, states, APIs, branches, packages, policies, or tests that the product must keep coherent.
 
-Core rule: a scanner produces candidates; only consumer, ownership, history, and verification evidence justify deletion. Prefer a few proved cuts over a long speculative list. Finding nothing safe to remove is a valid result.
+## Principles
+
+- A scanner produces candidates; only consumer, ownership, history, and verification evidence justify deletion.
+- Prefer a few proved cuts over a long speculative list. Finding nothing safe to remove is a valid result.
+- Net-negative lines are evidence of a cut, not the goal. A safe simplification may add a small test or migration; a large deletion can still be wrong.
+- Do not claim safety from green tests alone, and do not claim value from deletion volume alone.
 
 ## Choose The Mode
 
@@ -30,15 +35,15 @@ Start with large or central production surfaces, not only obvious unused symbols
 
 Look for these candidate classes:
 
-1. **Unconsumed surface**: public methods, exports, events, config keys, hooks, packages, registry notifications, or protocol fields with no production consumer.
-2. **Mirrored fact**: two events, caches, summaries, state stores, snapshots, or adapters record the same truth and must be synchronized.
-3. **Speculative generality**: unset knobs, fixed feature flags, unused fallbacks, one-implementation interfaces, abandoned stubs, or extension points with no owner.
-4. **Extra route or layer**: multiple front doors to one behavior, forwarding-only wrappers, pass-through packages, or helpers that obscure a single caller.
-5. **Lifecycle duplication**: several flags, sentinels, promises, queues, or controllers represent one transition such as ready, stopped, settled, flushed, or disposed.
-6. **Misplaced defense**: copies, freezes, validators, rollback paths, or hostile-object tests protect a same-process typed handoff rather than an actual trust or ownership boundary.
-7. **Hand-rolled infrastructure**: local parsers, retry loops, globbing, framing, diffing, or data structures already covered by the standard library, native platform, or an installed dependency.
-8. **Support-only residue**: tests or docs are the only consumers; duplicate expected outputs; obsolete inventories; demo/test packages that impose runtime or publishing cost.
-9. **Added-then-abandoned residue**: implementation disappeared but flags, schemas, docs, tests, compatibility branches, or decision notes still describe it.
+1. **Unconsumed surface**: exports, events, config keys, hooks, packages, registry notifications, or protocol fields with no production consumer.
+2. **Mirrored fact**: events, caches, summaries, state stores, snapshots, or adapters recording one truth that must be synchronized.
+3. **Speculative generality**: unset knobs, fixed feature flags, unused fallbacks, one-implementation interfaces, abandoned stubs, or ownerless extension points.
+4. **Extra route or layer**: multiple front doors to one behavior, forwarding-only wrappers, pass-through packages, or helpers obscuring a single caller.
+5. **Lifecycle duplication**: several flags, sentinels, promises, queues, or controllers representing one transition (ready, stopped, settled, flushed, disposed).
+6. **Misplaced defense**: copies, freezes, validators, rollback paths, or hostile-object tests protecting a same-process typed handoff, not a real trust or ownership boundary.
+7. **Hand-rolled infrastructure**: parsers, retry loops, globbing, framing, diffing, or data structures already covered by the standard library, platform, or an installed dependency.
+8. **Support-only residue**: tests or docs as the only consumers; duplicate expected outputs; obsolete inventories; demo/test packages with runtime or publishing cost.
+9. **Added-then-abandoned residue**: the implementation is gone but flags, schemas, docs, tests, compatibility branches, or decision notes still describe it.
 
 Do not confuse duplication with necessary independence. Separate backends, adapters, representations, or lifecycle mechanisms may intentionally test a contract or protect distinct owners.
 
@@ -88,8 +93,6 @@ verify: smallest decisive check; estimated net reduction
 6. Avoid compatibility shims when there is no compatibility obligation. When one exists, keep the path or design an explicit migration instead of silently deleting it.
 7. Keep batches reviewable and reversible. Never discard unrelated user changes.
 
-Net-negative lines are evidence of a cut, not the goal. A safe simplification may add a small test or migration; a large deletion can still be wrong.
-
 ## Validate The Result
 
 After each non-trivial batch:
@@ -113,5 +116,3 @@ For applied changes, report:
 - any user-visible capability or compatibility behavior changed;
 - exact validation run and result;
 - high-value candidates intentionally kept and why.
-
-Do not claim safety from green tests alone, and do not claim value from deletion volume alone.
